@@ -1,0 +1,24 @@
+/* Ionescu Andrei Ionut - 331CB */
+
+				Tema 2
+
+	Pentru nivelul 1 vom avea P thread-uri care citesc din fisierul orders.txt.
+Acestea au fiecare un reader care citeste linie cu linie din fisier. Ne folosim
+de un AtomicInteger declarat static care ne indica linia din fisier care trebuie
+citita. Astfel, fiecare thread primeste de la AtomicInteger un singur numar
+si intern tine un contor cu ultima linie citita. Apoi, citim din fisier linie cu linie,
+ignorand ce citim, pana cand ajungem la linia la care trebuie sa ajungem.
+Acolo, o citim, si incercam sa pornim un numar de thread-uri de nivel 2 egal
+cu numarul de produse din comanda. "Incercam" sa pornim intrucat avem
+voie cu maxim P thread-uri de nivel 2, asa ca folosim un semafor partajat
+de toate thread-urile de nivel 1 care permite ca doar P thread-uri de level 2
+sa fie active la un moment dat. Thread-ul de nivel 1 face acquire, iar cel de
+nivel 2 face release cand si-a terminat executia.
+
+	Thread-urile de nivel 2 citesc fiecare de la inceputul fisierului si folosim
+un AtomicInteger ca la prima citire pentru a ne asigura ca 2 thread-uri nu
+citesc aceiasi linie. Cand gaseste un produs din comanda curenta, scrie
+in fisier ca este shipped, iar apoi se termina. Cand toate thread-urile de
+nivel 2 pentru un anumit order s-au terminat, scriem in fisier shipped si
+trecem la urmatorul. Daca Thread-ul de nivel 1 gaseste o comanda cu 0
+produse, pur si simplu o ignora si trece la urmatoarea.
